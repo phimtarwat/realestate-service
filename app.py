@@ -3,7 +3,7 @@ import requests, re
 
 app = Flask(__name__)
 
-GOOGLE_API_KEY = "AIzaSyB8nmRbjRFkkUj6TzSktFsjlrW9mYBqdTY"  # << ใส่ API Key ของคุณ
+GOOGLE_API_KEY = "AIzaSyB8nmRbjRFkkUj6TzSktFsjlrW9mYBqdTY"  # << ใส่ API Key จริงของคุณ
 
 # Dictionary สำหรับ mapping เขต/แขวง → Zone
 ZONE_MAPPING = {
@@ -32,8 +32,8 @@ def expand_short_url(short_url):
 
 def extract_latlng_from_url(url):
     """ดึง lat,lng จาก Google Maps URL"""
-    # แบบ q=lat,lng
-    m = re.search(r"q=(-?\d+\.\d+),(-?\d+\.\d+)", url)
+    # แบบ ?q=lat,lng
+    m = re.search(r"[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)", url)
     if m:
         return m.group(1), m.group(2)
 
@@ -55,12 +55,16 @@ def reverse_geocode():
     lng = request.args.get("lng")
     maps_url = request.args.get("maps_url")
 
-    # ถ้ามี Google Maps URL → แปลง short link → extract lat,lng
+    # ถ้ามี Google Maps URL → ขยาย short link → extract lat,lng
     if maps_url and not lat and not lng:
         maps_url = expand_short_url(maps_url)
+        print(f"[DEBUG] Expanded URL: {maps_url}")  # debug log
         lat, lng = extract_latlng_from_url(maps_url)
         if not lat or not lng:
-            return jsonify({"error": "ไม่สามารถดึง lat,lng จาก Google Maps URL"}), 400
+            return jsonify({
+                "error": "ไม่สามารถดึง lat,lng จาก Google Maps URL",
+                "expanded_url": maps_url
+            }), 400
 
     if not lat or not lng:
         return jsonify({"error": "ต้องส่ง lat,lng หรือ maps_url"}), 400
