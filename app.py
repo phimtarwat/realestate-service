@@ -3,7 +3,7 @@ import requests, re
 
 app = Flask(__name__)
 
-GOOGLE_API_KEY = "YOUR_GOOGLE_MAPS_API_KEY"  # << ใส่ API Key จริงของคุณ
+GOOGLE_API_KEY = "AIzaSyB8nmRbjRFkkUj6TzSktFsjlrW9mYBqdTY"  # << ใส่ API Key จริงของคุณ
 
 ZONE_MAPPING = {
     "Huai Khwang": "พระราม 9 – รัชดา – ดินแดง",
